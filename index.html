@@ -81,7 +81,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent)}
 .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:16px 0}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
 .stat .k{font-size:12px;color:var(--sub);margin:0}
-.stat .v{font-size:clamp(22px,4.4vw,30px);font-weight:800;margin:2px 0 0;letter-spacing:-.01em}
+.stat .v{font-size:clamp(20px,4.2vw,29px);font-weight:800;margin:2px 0 0;letter-spacing:-.01em;white-space:nowrap}
 .stat.burn .v{color:var(--burn)}
 .ba{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:16px 0}
 .ba h3{margin:0 0 14px;font-size:15px}
@@ -456,7 +456,7 @@ function render(res){
     '<div class="hero">' +
       '<div class="stat"><p class="k">いまの固定費</p><p class="v num">' + yen(total) + '<span style="font-size:13px;font-weight:400">/月</span></p></div>' +
       '<div class="stat"><p class="k">年に直すと</p><p class="v num">' + yen(total*12) + '</p></div>' +
-      '<div class="stat burn"><p class="k">燃やせる脂肪</p><p class="v num">年' + yen(save*12) + '</p></div>' +
+      '<div class="stat burn"><p class="k">燃やせる脂肪（年）</p><p class="v num">' + yen(save*12) + '</p></div>' +
     '</div>' +
     '<div class="ba"><h3>ビフォー / アフター（年額）</h3>' +
       '<div class="barow"><span>いま</span><div class="bar now"><i id="barnow"></i></div><b class="num">' + yen(total*12) + '</b></div>' +
