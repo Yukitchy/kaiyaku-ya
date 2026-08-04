@@ -162,7 +162,9 @@ footer{color:var(--sub);font-size:12.5px;padding:34px 0 60px;border-top:1px soli
 
 <div class="panel">
   <label class="ttl" for="src">メールの件名・差出人を貼る</label>
-  <p class="hint"><a href="https://mail.google.com/mail/u/0/#search/%E9%A0%98%E5%8F%8E%E6%9B%B8+OR+%E8%AB%8B%E6%B1%82+OR+subscription+OR+receipt" target="_blank" rel="noopener"><b>Gmailでこの検索を開く</b></a> → 一覧の1行目の左からいちばん下まで<b>マウスでドラッグして選択</b>し、⌘C（Windowsは Ctrl+C）。それをこの下に貼ります。<br>日付やメール本文の抜粋が混ざっていて構いません。1行ずつ読むので、余計な文字は無視されます。</p>
+  <p class="hint"><a href="https://mail.google.com/mail/u/0/#search/%28%E9%A0%98%E5%8F%8E%E6%9B%B8+OR+%E8%AB%8B%E6%B1%82+OR+subscription+OR+receipt+OR+invoice+OR+%E4%BC%9A%E8%B2%BB%29+newer_than%3A1y" target="_blank" rel="noopener"><b>Gmailでこの検索を開く（過去1年ぶん）</b></a> → 一覧の1行目の左からいちばん下まで<b>マウスでドラッグして選択</b>し、⌘C（Windowsは Ctrl+C）。それをこの下に貼ります。<br>
+  <b>差出人ごと選択してください。</b>Netflixのように件名にサービス名が出ないものがあります。日付や本文の抜粋が混ざっていて構いません — 関係ない行は自動で捨てます。<br>
+  1ページ（50件）では足りません。<b>次のページも同じように貼り足す</b>と、年払いのサービスまで拾えます。</p>
   <textarea id="src" placeholder="Squarespace様への支払いの領収書&#10;Zoom のお支払い手続きが完了しました&#10;Netflix ご請求のお知らせ&#10;Your receipt from Anthropic, PBC"></textarea>
 
   <details>
@@ -308,6 +310,8 @@ const DB = [
  {n:"ジム",        a:["ANYTIME FITNESS","GOLD'S GYM","エニタイム","コナミスポーツ","CHOCOZAP","ちょこざっぷ"],c:"life",v:"cut",j:7000, s:{t:"月3,000円台の24時間ジム",j:3278,w:"週2回以下なら、設備の差より価格差の方が効きます"}},
  {n:"ウォーターサーバー",a:["プレミアムウォーター","コスモウォーター","FRECIOUS"],c:"life",v:"cut",j:4000, s:{t:"浄水ポット・蛇口直結型",j:500,w:"初期費用3,000円ほど。半年で元が取れます"}},
  {n:"Amazon（都度購入）",a:["AMAZON.CO.JP","AMAZON.COM","AMZN MKTP"],c:"life",v:"skip",j:0},
+ {n:"旅行・交通（都度）",a:["GRAB","AGODA","BOOKING.COM","EXPEDIA","JETSTAR","WILLER","ローチケ","じゃらん","楽天トラベル","UBER"],c:"life",v:"skip",j:0},
+ {n:"Apple（App Store経由）",a:["APPLE ACCOUNT","APPLEからの領収書","APP STORE","ITUNES"],c:"life",v:"weak",j:0},
  {n:"PlayStation Plus",a:["PLAYSTATION","SONY INTERACTIVE"],     c:"game",  v:"cut",  j:850,  s:{t:"エッセンシャル（最下位プラン）",j:850,w:"遊び放題のカタログを使っていないなら下げられます"}},
  {n:"Nintendo Switch Online",a:["NINTENDO"],                     c:"game",  v:"keep", j:306},
  {n:"Apple Arcade",a:["APPLE ARCADE"],                           c:"game",  v:"cut",  j:900,  s:{t:"Apple One",j:1200,w:"iCloudや音楽も使っているなら束ねた方が安い"}}
@@ -326,6 +330,14 @@ function norm(s){
 
 DB.forEach(e => { e._a = e.a.map(norm).filter(Boolean); });
 
+function dayOf(line){
+  const jp = line.match(/(\d{1,2})月\s?(\d{1,2})日/);
+  if (jp) return Number(jp[2]);
+  const iso = line.match(/\d{4}[/-](\d{1,2})[/-](\d{1,2})/);
+  if (iso) return Number(iso[2]);
+  return null;
+}
+
 function amountOf(line){
   const usd = line.match(/(?:US)?\$\s?([0-9][0-9,]*(?:\.[0-9]{1,2})?)/);
   if (usd) return Math.round(parseFloat(usd[1].replace(/,/g,"")) * RATE);
@@ -335,6 +347,12 @@ function amountOf(line){
   if (bare) return parseInt(bare[1].replace(/,/g,""),10);
   return null;
 }
+
+// 「サービス名が出た＝契約中」は成立しない。実データでは解約通知・決済失敗・ニュースレターが同じだけ届く
+const PAY  = /(領収書|receipt|invoice|請求|お支払い|支払い|payment|charged|決済|引き落と|ご利用代金|会費)/i;
+// 決済失敗・一時停止は「解約」ではない。契約は生きているので、金額だけ信じないでおく
+const FAIL = /(unsuccessful|failed|declined|失敗|できませんでした|エラー|一時停止|停止されました|保留)/i;
+const DEAD = /(canceled|cancelled|解約が完了|解約されました|解約手続きが完了|退会が完了|ご解約)/i;
 
 function analyze(text){
   const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(s=>s.length>1);
@@ -347,34 +365,55 @@ function analyze(text){
     for (const e of DB){
       if (e._a.some(al => key.includes(al))) { matched = e; break; }
     }
-    const amt = amountOf(line);
+    const dead = DEAD.test(line);
+    // 金額を信じてよいのは「課金の証拠がある行」だけ。失敗通知の金額を拾うと請求額が化ける
+    const paid = PAY.test(line) && !FAIL.test(line) && !dead;
+    const amt  = paid ? amountOf(line) : null;
     if (matched){
       if (matched.v === "skip") continue;
-      const cur = hits.get(matched.n) || {e:matched, count:0, amt:null};
+      const cur = hits.get(matched.n) || {e:matched, count:0, charges:[], paid:false, dead:false};
       cur.count++;
-      if (amt && (!cur.amt || amt > cur.amt)) cur.amt = amt;
+      cur.paid = cur.paid || paid;
+      cur.dead = cur.dead || dead;
+      if (amt) cur.charges.push({amt, day: dayOf(line)});
       hits.set(matched.n, cur);
     } else {
+      if (!paid && !amt) continue;   // ニュースレターや仕事メールを未測定に積み上げない
       const short = key.slice(0,28);
       if (!short) continue;
-      const cur = unknown.get(short) || {label:short, count:0, amt:null};
+      // 表示は元の行から出す（正規化後の文字列は人間が読めない）
+      const cur = unknown.get(short) || {label:line.replace(/\s+/g," ").slice(0,44), count:0, amt:null};
       cur.count++;
       if (amt) cur.amt = amt;
       unknown.set(short, cur);
     }
   }
   const rows = [...hits.values()].map(h => {
-    // ponytail: 拾った額が月額目安の6倍超なら年額とみなす。請求周期が本文に無いのでこの近似で足りる
-    const yearly = h.amt && h.e.j && h.amt >= h.e.j * 6;
-    const jpy = yearly ? Math.round(h.amt/12) : (h.amt || h.e.j);
+    // 同じ請求元から2契約ぶん届くことがある（例: サイト代は毎月27日、予約システムは毎月2日）。
+    // 請求日でまとめてから足す。同じ日の金額違いは値上げなので、足さずに新しい方を採る。
+    const byDay = {};
+    h.charges.forEach(c => (byDay[c.day == null ? "?" : c.day] = byDay[c.day == null ? "?" : c.day] || []).push(c.amt));
+    const perDay = Object.values(byDay).map(list => {
+      const freq = {}; list.forEach(a => freq[a] = (freq[a]||0)+1);
+      return Number(Object.keys(freq).sort((a,b)=>freq[b]-freq[a] || b-a)[0]);
+    });
+    // 別の日でも同額なら、契約が2本ではなく引き落とし日がずれただけとみなす
+    const distinct = [...new Set(perDay)].sort((a,b)=>a-b);
+    const amt = distinct.length ? distinct.reduce((s,v)=>s+v, 0) : null;
+    // ponytail: 拾った額が月額目安の6倍超なら年払いとみなす。請求周期は本文に無いのでこの近似で足りる
+    const yearly = amt && h.e.j && distinct.length === 1 && amt >= h.e.j * 6;
+    const jpy = yearly ? Math.round(amt/12) : (amt || h.e.j);
     const swap = (h.e.s && h.e.s.t && h.e.s.j < jpy) ? h.e.s : null;
     return {
-      name:h.e.n, cat:h.e.c, verdict:h.e.v, alt:h.e.alt, swap, yearly:!!yearly,
-      jpy, estimated: !h.amt, count:h.count
+      name:h.e.n, cat:h.e.c, verdict: h.dead ? "dead" : (h.paid ? h.e.v : "weak"),
+      alt:h.e.alt, swap, yearly:!!yearly,
+      jpy, estimated: !amt, count:h.count,
+      multi: distinct.length >= 2 ? distinct : null
     };
   });
+  const live = rows.filter(r => r.verdict !== "dead" && r.verdict !== "weak");
   const byCat = {};
-  rows.forEach(r => { (byCat[r.cat] = byCat[r.cat] || []).push(r); });
+  live.forEach(r => { (byCat[r.cat] = byCat[r.cat] || []).push(r); });
   // 重複は印を付けて警告するだけ。切る/残すはサービス単位で辞書が持っているので上書きしない
   // （上書きすると「残して一本化する側」まで切る扱いになり、節約額が二重に乗る）
   const DUPE_WARN = ["video","music","store","read","game","ai"];
@@ -390,7 +429,9 @@ function analyze(text){
 }
 
 // 残すものでも上位互換があれば差額が浮く。切るもの・自作できるものは全額が浮く
+// 解約済み・課金の証拠が無いものは、浮く額を0にする（払っていないものを成果に数えない）
 function saveOf(r){
+  if (r.verdict === "dead" || r.verdict === "weak") return 0;
   if (r.swap) return Math.max(0, r.jpy - r.swap.j);
   return r.verdict === "keep" ? 0 : r.jpy;
 }
@@ -418,25 +459,35 @@ function render(res){
     out.innerHTML = '<div class="panel"><p style="margin:0">読み取れる契約が見つかりませんでした。領収書メールの件名を、1行ずつになるように貼ってみてください。</p></div>';
     return;
   }
-  const total = rows.reduce((s,r)=>s+r.jpy, 0);
-  const save  = rows.reduce((s,r)=>s+r.save, 0);
-  const fat   = total ? Math.round(save / total * 100) : 0;
   const keep = rows.filter(r=>r.verdict==="keep");
   const cut  = rows.filter(r=>r.verdict==="cut");
   const ai   = rows.filter(r=>r.verdict==="ai");
+  const dead = rows.filter(r=>r.verdict==="dead");
+  const weak = rows.filter(r=>r.verdict==="weak");
+  const total = keep.concat(cut, ai).reduce((s,r)=>s+r.jpy, 0);
+  const save  = rows.reduce((s,r)=>s+r.save, 0);
+  const fat   = total ? Math.round(save / total * 100) : 0;
   const top  = rows.filter(r=>r.save>0).sort((a,b)=>b.save-a.save)[0];
 
   const item = r =>
     '<div class="item"><div><p class="nm">' + r.name +
       (r.dupe ? '<span class="pill ' + (r.verdict==="cut" ? "p-cut" : "p-unk") + '">' + r.dupe + 'が重複</span>' : '') +
     '</p><p class="ds">' +
-      (r.verdict==="keep" && !r.swap ? "使っている前提で残す" :
+      (r.verdict==="dead" ? (r.multi
+        ? "解約のメールが見つかりました。ただし金額違いの請求が複数あるので、別契約がまだ生きている可能性があります"
+        : "解約済みのメールが見つかりました。もう払っていないので合計には入れていません") :
+       r.verdict==="weak" ? "名前は出てきましたが、請求・領収書のメールがありません。契約中か確認してください" :
+       r.verdict==="keep" && !r.swap ? "使っている前提で残す" :
        r.alt ? "自分で用意すれば要らなくなります" : "使っていないなら止めどき") +
-      (r.estimated ? "　※金額は一般的な目安" : "") + (r.yearly ? "　※年払いを月あたりに換算" : "") +
+      (r.estimated && r.verdict!=="dead" ? "　※金額は一般的な目安" : "") +
+      (r.yearly ? "　※年払いを月あたりに換算" : "") +
     '</p>' +
+      (r.multi ? '<p class="swap" style="background:color-mix(in srgb,var(--warn) 12%,transparent)">⚠ 同じ請求元で<b>複数の金額</b>（' +
+        r.multi.map(yen).join(" / ") + '）が届いています。<b>2契約あるか、値上げされた</b>かのどちらかです。管理画面で確認してください</p>' : '') +
       (r.swap ? '<p class="swap">↗ <b>' + r.swap.t + (r.swap.j ? '（月' + yen(r.swap.j) + '）' : '（0円）') + '</b>へ<br>' + r.swap.w + '</p>' : '') +
       (r.alt  ? '<p class="swap">↗ <b>' + r.alt + '</b> で置き換えられます</p>' : '') +
-    '</div><div class="amt num">' + yen(r.jpy) + '<small>/月</small>' +
+    '</div><div class="amt num">' +
+      (r.verdict==="weak" && r.estimated ? '<span style="color:var(--sub)">—</span>' : yen(r.jpy) + '<small>/月</small>') +
       (r.save ? '<em>−' + yen(r.save) + '</em>' : '') +
     '</div></div>';
 
@@ -449,7 +500,9 @@ function render(res){
     '<div class="scale">' +
       '<p class="k">固定費 体脂肪率</p>' +
       '<p class="pct num"><span id="pctv">0</span><span>%</span></p>' +
-      '<p class="sub">月' + yen(total) + 'のうち <b>' + yen(save) + '</b> が落とせる脂肪です</p>' +
+      '<p class="sub">月' + yen(total) + 'のうち <b>' + yen(save) + '</b> が落とせる脂肪です<br>' +
+        '<span style="font-size:12.5px">請求メールから実額が読めたもの <b>' + keep.concat(cut,ai).filter(r=>!r.estimated).length +
+        '件</b> ／ 一般的な料金からの目安 <b>' + keep.concat(cut,ai).filter(r=>r.estimated).length + '件</b></span></p>' +
       '<div class="gauge"><i id="gfill"></i></div>' +
       '<div class="ticks"><span>0% 引き締まっている</span><span>50%</span><span>100% 危険</span></div>' +
     '</div>' +
@@ -468,11 +521,16 @@ function render(res){
       (top.alt ? '受け皿（' + top.alt + '）を先に用意してから止めるのが安全です。'
                : top.swap ? top.swap.w + '。使えるものは減りません。'
                : '使っていないなら、今日の5分で終わります。') + '</p></div>' : '') +
+    (weak.length ? '<div class="dupe"><b>まだ本当の数字ではありません</b> — 名前は出てきたのに請求メールが見つからないサービスが' +
+      weak.length + '件あります（' + weak.map(r=>r.name).join(" ／ ") +
+      '）。契約中なら、その請求メールも貼り足してください。上の合計はこの分を含めていません。</div>' : '') +
     dupes.map(d => '<div class="dupe"><b>' + d.cat + 'が' + d.names.length + '本あります</b> — ' + d.names.join(" ／ ") +
       '。合わせて月' + yen(d.total) + '。全部使い切れている人はほとんどいません。</div>').join("") +
     bucket("筋肉：残す", keep) +
     bucket("脂肪：落とす・乗り換える", cut) +
     bucket("置き換える：自分で用意すれば消える", ai) +
+    bucket("契約中か要確認（請求メールが無い）", weak) +
+    bucket("解約済み（もう払っていません）", dead) +
     (unknown.length ? '<section class="bucket"><div class="bhead"><h2>未測定</h2><span class="cnt">' + unknown.length +
       '件</span></div><div class="item"><div><p class="ds" style="margin:0">辞書に無い名前です。無かったことにはせず出しています。定期課金なら手で確認してください。<br>' +
       unknown.slice(0,12).map(u=>u.label).join(" ／ ") + '</p></div></div></section>' : '');
