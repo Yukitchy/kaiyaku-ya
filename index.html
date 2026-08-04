@@ -449,6 +449,8 @@ function countUp(el, to, fmt){
     if (p < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
+  // 裏のタブではrequestAnimationFrameが止まる。演出が流れても数字だけは必ず出す
+  setTimeout(() => { if (el.textContent !== fmt(to)) el.textContent = fmt(to); }, dur + 300);
 }
 
 function render(res){
@@ -477,7 +479,7 @@ function render(res){
         ? "解約のメールが見つかりました。ただし金額違いの請求が複数あるので、別契約がまだ生きている可能性があります"
         : "解約済みのメールが見つかりました。もう払っていないので合計には入れていません") :
        r.verdict==="weak" ? "名前は出てきましたが、請求・領収書のメールがありません。契約中か確認してください" :
-       r.verdict==="keep" && !r.swap ? "使っている前提で残す" :
+       r.verdict==="keep" ? (r.swap ? "残したまま、もっと安いプランに移せます" : "使っている前提で残す") :
        r.alt ? "自分で用意すれば要らなくなります" : "使っていないなら止めどき") +
       (r.estimated && r.verdict!=="dead" ? "　※金額は一般的な目安" : "") +
       (r.yearly ? "　※年払いを月あたりに換算" : "") +
@@ -493,7 +495,9 @@ function render(res){
 
   const bucket = (title, list) => !list.length ? "" :
     '<section class="bucket"><div class="bhead"><h2>' + title + '</h2>' +
-    '<span class="cnt num">' + list.length + '件 ・ 月' + yen(list.reduce((s,r)=>s+r.jpy,0)) + '</span></div>' +
+    '<span class="cnt num">' + list.length + '件' +
+      (list[0].verdict === "weak" ? '（契約中なら月' + yen(list.reduce((s,r)=>s+r.jpy,0)) + 'ぶん）'
+                                  : ' ・ 月' + yen(list.reduce((s,r)=>s+r.jpy,0))) + '</span></div>' +
     list.slice().sort((a,b)=>b.jpy-a.jpy).map(item).join("") + '</section>';
 
   out.innerHTML =
@@ -518,7 +522,8 @@ function render(res){
     (top ? '<div class="oneshot"><p class="k">まずこの1本</p><p class="v">' + top.name +
       (top.swap ? ' を ' + top.swap.t + ' に乗り換えると、年 ' + yen(top.save*12)
                 : ' を止めると、年 ' + yen(top.save*12)) + '</p><p>' +
-      (top.alt ? '受け皿（' + top.alt + '）を先に用意してから止めるのが安全です。'
+      (top.multi ? '⚠ この請求元からは金額違いの請求が届いています。<b>別サービスの契約が混ざっている可能性が高い</b>ので、止める前にどちらの契約かを管理画面で確認してください。'
+               : top.alt ? '受け皿（' + top.alt + '）を先に用意してから止めるのが安全です。'
                : top.swap ? top.swap.w + '。使えるものは減りません。'
                : '使っていないなら、今日の5分で終わります。') + '</p></div>' : '') +
     (weak.length ? '<div class="dupe"><b>まだ本当の数字ではありません</b> — 名前は出てきたのに請求メールが見つからないサービスが' +
