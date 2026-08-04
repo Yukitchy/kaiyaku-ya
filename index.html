@@ -166,7 +166,7 @@ summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent)}
 .shot svg{display:block;width:100%;height:auto}
 .hot{cursor:help}
 .hot .tip{opacity:0;transition:opacity .15s var(--ease-out);pointer-events:none}
-.hot:hover .tip,.hot:focus .tip{opacity:1}
+.hot:hover .tip,.hot:focus .tip,.hot:focus-within .tip,.hot.show .tip{opacity:1}
 .hint-hover{font-size:12.5px;color:var(--sub);margin:8px 0 0}
 .reveal{animation:reveal-in linear both;animation-timeline:view();animation-range:entry 8% cover 30%}
 @keyframes reveal-in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
@@ -219,7 +219,7 @@ footer{color:var(--sub);font-size:12.5px;padding:34px 0 60px;border-top:1px soli
 
 <section class="manual reveal" id="howto">
   <h2>使い方</h2>
-  <p class="lead2" style="color:var(--sub);font-size:14px;margin:0 0 10px">3ステップ、だいたい30秒です。図の<b>丸数字にマウスを乗せる</b>と、その場所の説明が出ます。</p>
+  <p class="lead2" style="color:var(--sub);font-size:14px;margin:0 0 10px">3ステップ、だいたい30秒です。図の<b>丸数字にマウスを乗せる（スマホはタップ）</b>と、その場所の説明が出ます。</p>
 
   <nav class="stepsnav" id="stepsnav" aria-label="使い方の手順">
     <a href="#step1" class="on">① Gmailで検索</a>
@@ -790,6 +790,18 @@ document.getElementById("demo").onclick = async (ev) => {
   await measure(ta.value);
   btn.disabled = false; btn.textContent = "デモをもう一度";
 };
+
+// 図の吹き出し: スマホにはホバーが無いのでタップでも開くようにする
+document.querySelectorAll(".hot").forEach(el => {
+  const toggle = ev => {
+    ev.preventDefault();
+    const open = el.classList.contains("show");
+    document.querySelectorAll(".hot.show").forEach(o => o.classList.remove("show"));
+    el.classList.toggle("show", !open);
+  };
+  el.addEventListener("click", toggle);
+  el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") toggle(ev); });
+});
 
 // 使い方ナビ: いま読んでいる手順を光らせる
 (function(){
