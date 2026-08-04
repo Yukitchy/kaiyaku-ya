@@ -143,6 +143,31 @@ summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent)}
 .total .k{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--sub);margin:0}
 .total .v{font-size:clamp(30px,7vw,44px);font-weight:800;color:var(--burn);margin:4px 0 0;letter-spacing:-.02em}
 .total p{margin:6px 0 0;font-size:13px;color:var(--sub)}
+.topnav{display:flex;gap:8px;margin:14px 0 0}
+.topnav a{font-size:13px;font-weight:700;text-decoration:none;color:var(--accent);
+  border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--card);
+  transition:transform .12s var(--spring),border-color .12s ease}
+.topnav a:hover{transform:translateY(-2px);border-color:var(--accent)}
+.manual{margin:56px 0 0;scroll-margin-top:60px}
+.manual h2{font-size:22px;margin:0 0 6px}
+.stepsnav{position:sticky;top:0;z-index:5;display:flex;gap:6px;flex-wrap:wrap;padding:10px 0;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);margin-bottom:8px}
+.stepsnav a{font-size:13px;font-weight:700;text-decoration:none;color:var(--sub);
+  border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--card);
+  transition:color .15s ease,border-color .15s ease}
+.stepsnav a:hover{border-color:var(--accent);color:var(--accent)}
+.stepsnav a.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:14px;scroll-margin-top:64px}
+.step h3{display:flex;align-items:center;gap:10px;font-size:17px;margin:0 0 6px}
+.stepno{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+  display:grid;place-items:center;font-size:14px;font-weight:800}
+.step p{margin:0 0 4px;font-size:14px;color:var(--sub)}
+.shot{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}
+.shot svg{display:block;width:100%;height:auto}
+.hot{cursor:help}
+.hot .tip{opacity:0;transition:opacity .15s var(--ease-out);pointer-events:none}
+.hot:hover .tip,.hot:focus .tip{opacity:1}
+.hint-hover{font-size:12.5px;color:var(--sub);margin:8px 0 0}
 .reveal{animation:reveal-in linear both;animation-timeline:view();animation-range:entry 8% cover 30%}
 @keyframes reveal-in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 @supports not (animation-timeline:view()){.reveal{animation:none;opacity:1;transform:none}}
@@ -158,13 +183,17 @@ footer{color:var(--sub);font-size:12.5px;padding:34px 0 60px;border-top:1px soli
   <p class="eyebrow">KAIYAKU-YA ／ 固定費の体組成計</p>
   <h1>払いすぎている固定費を、<br><span class="u">30秒</span>で見つけます。</h1>
   <p class="lead">領収書メールを貼るだけ。いま何を契約しているかを読み取って、年いくら落とせるかを出します。ただ解約させるのではなく、<b>同じことができてもっと安い乗り換え先</b>を先に提案します。貼った内容はどこにも送りません。</p>
+  <nav class="topnav" aria-label="ページ内ナビ">
+    <a href="#howto">使い方を見る</a>
+    <a href="#cases">実際にいくら落ちたか</a>
+  </nav>
 </header>
 
 <div class="panel">
   <label class="ttl" for="src">メールの件名・差出人を貼る</label>
-  <p class="hint"><a href="https://mail.google.com/mail/u/0/#search/%28%E9%A0%98%E5%8F%8E%E6%9B%B8+OR+%E8%AB%8B%E6%B1%82+OR+subscription+OR+receipt+OR+invoice+OR+%E4%BC%9A%E8%B2%BB%29+newer_than%3A1y" target="_blank" rel="noopener"><b>Gmailでこの検索を開く（過去1年ぶん）</b></a> → 一覧の1行目の左からいちばん下まで<b>マウスでドラッグして選択</b>し、⌘C（Windowsは Ctrl+C）。それをこの下に貼ります。<br>
-  <b>差出人ごと選択してください。</b>Netflixのように件名にサービス名が出ないものがあります。日付や本文の抜粋が混ざっていて構いません — 関係ない行は自動で捨てます。<br>
-  1ページ（50件）では足りません。<b>次のページも同じように貼り足す</b>と、年払いのサービスまで拾えます。</p>
+  <p class="hint"><a href="https://mail.google.com/mail/u/0/#search/%28%E9%A0%98%E5%8F%8E%E6%9B%B8+OR+%E8%AB%8B%E6%B1%82+OR+subscription+OR+receipt+OR+invoice+OR+%E4%BC%9A%E8%B2%BB%29+newer_than%3A1y" target="_blank" rel="noopener"><b>Gmailでこの検索を開く（過去1年ぶん）</b></a> → 開いた画面で <b>⌘A</b>（全選択）→ <b>⌘C</b>（コピー）。Windowsは Ctrl+A → Ctrl+C。それをこの下に貼ります。<br>
+  メールの一覧はドラッグでは選べません（行をつかむと移動になります）。<b>画面まるごと全選択でかまいません</b> — サイドバーもラベルも一緒にコピーされますが、関係ない行は自動で捨てます。<br>
+  1ページ（100件）では足りません。<b>次のページも同じように貼り足す</b>と、年払いのサービスまで拾えます。</p>
   <textarea id="src" placeholder="Squarespace様への支払いの領収書&#10;Zoom のお支払い手続きが完了しました&#10;Netflix ご請求のお知らせ&#10;Your receipt from Anthropic, PBC"></textarea>
 
   <details>
@@ -188,7 +217,158 @@ footer{color:var(--sub);font-size:12.5px;padding:34px 0 60px;border-top:1px soli
 
 <div id="out"></div>
 
-<section class="cases reveal">
+<section class="manual reveal" id="howto">
+  <h2>使い方</h2>
+  <p class="lead2" style="color:var(--sub);font-size:14px;margin:0 0 10px">3ステップ、だいたい30秒です。図の<b>丸数字にマウスを乗せる</b>と、その場所の説明が出ます。</p>
+
+  <nav class="stepsnav" id="stepsnav" aria-label="使い方の手順">
+    <a href="#step1" class="on">① Gmailで検索</a>
+    <a href="#step2">② 一覧をコピー</a>
+    <a href="#step3">③ 貼って測定</a>
+    <a href="#step4">④ 結果を読む</a>
+  </nav>
+
+  <article class="step" id="step1">
+    <h3><span class="stepno">1</span>Gmailで検索する</h3>
+    <p>下のボタンを押すと、検索語が入った状態でGmailが開きます。自分で打つ必要はありません。</p>
+    <p style="margin-top:8px"><a class="btn ghost" style="display:inline-block;text-decoration:none;font-size:14px;padding:9px 18px" target="_blank" rel="noopener"
+      href="https://mail.google.com/mail/u/0/#search/%28%E9%A0%98%E5%8F%8E%E6%9B%B8+OR+%E8%AB%8B%E6%B1%82+OR+subscription+OR+receipt+OR+invoice+OR+%E4%BC%9A%E8%B2%BB%29+newer_than%3A1y">Gmailで検索を開く ↗</a></p>
+    <div class="shot">
+      <svg viewBox="0 0 640 150" role="img" aria-label="Gmailの検索窓に、領収書・請求・receipt などの検索語が入っている図">
+        <rect x="0" y="0" width="640" height="150" fill="var(--card)"/>
+        <rect x="0" y="0" width="640" height="30" fill="var(--bg)"/>
+        <circle cx="20" cy="15" r="4" fill="var(--line)"/><circle cx="34" cy="15" r="4" fill="var(--line)"/><circle cx="48" cy="15" r="4" fill="var(--line)"/>
+        <text x="300" y="19" font-size="11" fill="var(--sub)">mail.google.com</text>
+        <rect x="40" y="58" width="560" height="42" rx="21" fill="var(--bg)" stroke="var(--line)"/>
+        <circle cx="70" cy="79" r="7" fill="none" stroke="var(--sub)" stroke-width="2"/>
+        <line x1="75" y1="84" x2="81" y2="90" stroke="var(--sub)" stroke-width="2" stroke-linecap="round"/>
+        <text x="96" y="84" font-size="13" fill="var(--ink)">(領収書 OR 請求 OR receipt OR invoice) newer_than:1y</text>
+        <g class="hot" tabindex="0">
+          <circle cx="40" cy="58" r="13" fill="var(--accent)"/>
+          <text x="40" y="63" font-size="13" font-weight="800" fill="#fff" text-anchor="middle">1</text>
+          <g class="tip">
+            <rect x="40" y="104" width="330" height="36" rx="8" fill="var(--ink)"/>
+            <text x="54" y="127" font-size="12" fill="var(--bg)">過去1年ぶんに絞ってあります。年払いのサービスも拾えます</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </article>
+
+  <article class="step" id="step2">
+    <h3><span class="stepno">2</span>画面まるごと ⌘A → ⌘C</h3>
+    <p><b>メールの一覧はドラッグで選べません</b>（行をつかむとメールの移動になります）。キーボードで <b>⌘A</b>（全選択）→ <b>⌘C</b>（コピー）してください。Windowsは Ctrl+A → Ctrl+C。</p>
+    <p>サイドバーやラベル名も一緒にコピーされますが、そのままで大丈夫です。請求・領収書の行だけを拾い、残りは捨てます。</p>
+    <div class="shot">
+      <svg viewBox="0 0 640 230" role="img" aria-label="メール一覧を上から下までドラッグ選択している図。差出人・件名・日付の3列が青く選択されている">
+        <rect x="0" y="0" width="640" height="230" fill="var(--card)"/>
+        <rect x="24" y="18" width="592" height="180" rx="6" fill="color-mix(in srgb,var(--accent) 13%,transparent)"/>
+        <text x="40" y="44" font-size="12" font-weight="700" fill="var(--ink)">PayPal</text>
+        <text x="150" y="44" font-size="12" fill="var(--ink)">Squarespace様への支払いの領収書</text>
+        <text x="560" y="44" font-size="12" fill="var(--sub)">7月27日</text>
+        <text x="40" y="80" font-size="12" font-weight="700" fill="var(--ink)">Zoom</text>
+        <text x="150" y="80" font-size="12" fill="var(--ink)">お支払い手続きが完了しました</text>
+        <text x="566" y="80" font-size="12" fill="var(--sub)">7月8日</text>
+        <text x="40" y="116" font-size="12" font-weight="700" fill="var(--ink)">Netflix</text>
+        <text x="150" y="116" font-size="12" fill="var(--ink)">今週のTOP10リストが到着!</text>
+        <text x="566" y="116" font-size="12" fill="var(--sub)">7月21日</text>
+        <text x="40" y="152" font-size="12" font-weight="700" fill="var(--ink)">Anthropic</text>
+        <text x="150" y="152" font-size="12" fill="var(--ink)">Your receipt from Anthropic, PBC</text>
+        <text x="566" y="152" font-size="12" fill="var(--sub)">7月2日</text>
+        <text x="40" y="188" font-size="12" font-weight="700" fill="var(--ink)">日本通信</text>
+        <text x="150" y="188" font-size="12" fill="var(--ink)">合理的50GBプラン のご請求のお知らせ</text>
+        <text x="560" y="188" font-size="12" fill="var(--sub)">6月29日</text>
+        <rect x="470" y="204" width="52" height="24" rx="6" fill="var(--ink)"/>
+        <text x="496" y="220" font-size="12" font-weight="800" fill="var(--bg)" text-anchor="middle">⌘A</text>
+        <text x="532" y="220" font-size="12" fill="var(--sub)">→</text>
+        <rect x="548" y="204" width="52" height="24" rx="6" fill="var(--ink)"/>
+        <text x="574" y="220" font-size="12" font-weight="800" fill="var(--bg)" text-anchor="middle">⌘C</text>
+        <g class="hot" tabindex="0">
+          <circle cx="40" cy="18" r="13" fill="var(--accent)"/>
+          <text x="40" y="23" font-size="13" font-weight="800" fill="#fff" text-anchor="middle">2</text>
+          <g class="tip">
+            <rect x="56" y="4" width="316" height="30" rx="8" fill="var(--ink)"/>
+            <text x="70" y="24" font-size="12" fill="var(--bg)">ドラッグは不可。キーボードで全部まとめて選びます</text>
+          </g>
+        </g>
+        <g class="hot" tabindex="0">
+          <circle cx="112" cy="116" r="11" fill="var(--burn)"/>
+          <text x="112" y="121" font-size="12" font-weight="800" fill="#fff" text-anchor="middle">!</text>
+          <g class="tip">
+            <rect x="130" y="98" width="360" height="36" rx="8" fill="var(--burn)"/>
+            <text x="144" y="121" font-size="12" fill="#fff">件名に「Netflix」が無い。差出人を入れないと取りこぼします</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <p class="hint-hover">1ページ（50件）では足りません。次のページも同じように<b>貼り足す</b>と精度が上がります。</p>
+  </article>
+
+  <article class="step" id="step3">
+    <h3><span class="stepno">3</span>いちばん上の欄に貼って、測定する</h3>
+    <p>日付やメール本文の抜粋が混ざっていて構いません。関係ない行は自動で捨てます。貼った文字は<b>この画面の中だけ</b>で処理され、どこにも送信されません。</p>
+    <div class="shot">
+      <svg viewBox="0 0 640 170" role="img" aria-label="貼り付け欄にメール一覧を貼り、測定するボタンを押す図">
+        <rect x="0" y="0" width="640" height="170" fill="var(--card)"/>
+        <rect x="24" y="18" width="592" height="86" rx="8" fill="var(--bg)" stroke="var(--line)"/>
+        <text x="40" y="42" font-size="11" fill="var(--sub)">PayPal　Squarespace様への支払いの領収書　7月27日</text>
+        <text x="40" y="62" font-size="11" fill="var(--sub)">Zoom　お支払い手続きが完了しました　7月8日</text>
+        <text x="40" y="82" font-size="11" fill="var(--sub)">Netflix　今週のTOP10リストが到着!　7月21日</text>
+        <rect x="24" y="122" width="128" height="36" rx="18" fill="var(--accent)"/>
+        <text x="88" y="145" font-size="14" font-weight="800" fill="#fff" text-anchor="middle">測定する</text>
+        <g class="hot" tabindex="0">
+          <circle cx="168" cy="140" r="13" fill="var(--accent)"/>
+          <text x="168" y="145" font-size="13" font-weight="800" fill="#fff" text-anchor="middle">3</text>
+          <g class="tip">
+            <rect x="188" y="122" width="330" height="36" rx="8" fill="var(--ink)"/>
+            <text x="202" y="145" font-size="12" fill="var(--bg)">押すと約1.5秒で結果が出ます。やり直しは何度でも無料です</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </article>
+
+  <article class="step" id="step4">
+    <h3><span class="stepno">4</span>結果の読み方</h3>
+    <p>いちばん上の<b>体脂肪率</b>は「いまの固定費のうち、何%が落とせるか」です。下は4つの箱に分かれます。</p>
+    <div class="shot">
+      <svg viewBox="0 0 640 200" role="img" aria-label="結果画面の4つの箱の説明図。筋肉・脂肪・置き換える・要確認">
+        <rect x="0" y="0" width="640" height="200" fill="var(--card)"/>
+        <g class="hot" tabindex="0">
+          <rect x="24" y="20" width="286" height="52" rx="10" fill="color-mix(in srgb,var(--accent) 12%,transparent)" stroke="var(--accent)"/>
+          <text x="42" y="44" font-size="13" font-weight="800" fill="var(--accent)">筋肉：残す</text>
+          <text x="42" y="62" font-size="11.5" fill="var(--sub)">使っているもの。安いプランがあれば出します</text>
+          <g class="tip"><rect x="24" y="76" width="286" height="26" rx="7" fill="var(--ink)"/>
+            <text x="38" y="93" font-size="11.5" fill="var(--bg)">解約しなくても差額だけ浮く項目がここに入ります</text></g>
+        </g>
+        <g class="hot" tabindex="0">
+          <rect x="330" y="20" width="286" height="52" rx="10" fill="color-mix(in srgb,var(--burn) 12%,transparent)" stroke="var(--burn)"/>
+          <text x="348" y="44" font-size="13" font-weight="800" fill="var(--burn)">脂肪：落とす・乗り換える</text>
+          <text x="348" y="62" font-size="11.5" fill="var(--sub)">止めるか、もっと安い上位互換へ</text>
+          <g class="tip"><rect x="330" y="76" width="286" height="26" rx="7" fill="var(--ink)"/>
+            <text x="344" y="93" font-size="11.5" fill="var(--bg)">「解約しろ」ではなく、代わりの手を必ず添えます</text></g>
+        </g>
+        <g class="hot" tabindex="0">
+          <rect x="24" y="118" width="286" height="52" rx="10" fill="color-mix(in srgb,#4C6FBF 12%,transparent)" stroke="#4C6FBF"/>
+          <text x="42" y="142" font-size="13" font-weight="800" fill="#4C6FBF">置き換える</text>
+          <text x="42" y="160" font-size="11.5" fill="var(--sub)">無料のもので同じことができる項目</text>
+          <g class="tip"><rect x="24" y="60" width="286" height="26" rx="7" fill="var(--ink)"/>
+            <text x="38" y="77" font-size="11.5" fill="var(--bg)">受け皿を先に作ってから止めるのが安全です</text></g>
+        </g>
+        <g class="hot" tabindex="0">
+          <rect x="330" y="118" width="286" height="52" rx="10" fill="color-mix(in srgb,var(--sub) 12%,transparent)" stroke="var(--sub)"/>
+          <text x="348" y="142" font-size="13" font-weight="800" fill="var(--sub)">契約中か要確認</text>
+          <text x="348" y="160" font-size="11.5" fill="var(--sub)">名前は出たが、請求メールが無いもの</text>
+          <g class="tip"><rect x="330" y="60" width="286" height="26" rx="7" fill="var(--ink)"/>
+            <text x="344" y="77" font-size="11.5" fill="var(--bg)">合計には入れません。水増しした数字を出さないため</text></g>
+        </g>
+      </svg>
+    </div>
+    <p class="hint-hover">金額が「目安」と付いているものは、メール本文に金額が無かったため一般的な料金を当てています。実額が読めた件数は結果の上に出しています。</p>
+  </article>
+</section>
+
+<section class="cases reveal" id="cases">
   <h2>実際にどれだけ落ちたか</h2>
   <p class="lead2">1件目は実測、2件目以降は「よくある組み合わせ」から作った想定ケースです。</p>
 
@@ -258,7 +438,7 @@ const DB = [
  {n:"Netflix",     a:["NETFLIX","ﾈﾂﾄﾌﾘﾂｸｽ","ネットフリックス"], c:"video", v:"cut",  j:1590, s:{t:"広告つきスタンダード",j:890,w:"見られる作品は同じ。広告を許せるなら月700円下がります"}},
  {n:"Disney+",     a:["DISNEY","デイズニー","ディズニー"],       c:"video", v:"cut",  j:1250, s:{t:"年額プラン",j:1000,w:"見続けるつもりなら年額の方が月250円安い"}},
  {n:"U-NEXT",      a:["UNEXT","U-NEXT","ユーネクスト"],          c:"video", v:"cut",  j:2189, s:{t:"見る月だけ契約",j:0,w:"毎月1,200ポイントを使い切れていないなら、映画に行く月だけ入り直す方が得です"}},
- {n:"Amazon Prime",a:["AMAZON PRIME","プライム会費","AMZNPRIME"],c:"video", v:"keep", j:600,  s:{t:"年額プラン",j:492,w:"送料込みで考えると年額が最安。ここは残す価値があります"}},
+ {n:"Amazon Prime",a:["AMAZON PRIME","プライム会費","AMZNPRIME"],c:"video", v:"keep", j:600, y:true,  s:{t:"年額プラン",j:492,w:"送料込みで考えると年額が最安。ここは残す価値があります"}},
  {n:"Hulu",        a:["HULU","ﾌｰﾙｰ"],                            c:"video", v:"cut",  j:1026, s:{t:"Disney+セットプラン",j:1490,w:"両方見るなら2本契約より安い"}},
  {n:"DAZN",        a:["DAZN"],                                   c:"video", v:"cut",  j:4200, s:{t:"見る競技を絞ったプラン",j:980,w:"1競技しか見ないなら4,200円は払いすぎです"}},
  {n:"ABEMA",       a:["ABEMA"],                                  c:"video", v:"cut",  j:1080, s:{t:"無料版",j:0,w:"追っかけ再生と広告カットが要らなければ無料で足ります"}},
@@ -273,7 +453,7 @@ const DB = [
  {n:"Perplexity",  a:["PERPLEXITY"],                             c:"ai",    v:"cut",  j:3100, s:{t:"手持ちのAIの検索機能",j:0,w:"Claude・ChatGPT・Geminiに同等のWeb検索が入っています"}},
  {n:"Midjourney",  a:["MIDJOURNEY"],                             c:"ai",    v:"cut",  j:1550, s:{t:"契約済みAIの画像生成",j:0,w:"画像生成だけのために別契約する必要はほぼなくなりました"}},
  {n:"ElevenLabs",  a:["ELEVENLABS","ELEVEN LABS"],               c:"ai",    v:"cut",  j:800,  s:{t:"VOICEVOX（無料）",j:0,w:"日本語ナレーションなら無料ソフトで実用水準です"}},
- {n:"Google One",  a:["GOOGLE ONE","グーグル・ペイメント"],        c:"store", v:"keep", j:1300, s:{t:"AIプラン",j:2900,w:"AIに別途課金しているなら、こちらに寄せると1本分浮きます"}},
+ {n:"Google One",  a:["GOOGLE ONE","グーグル・ペイメント"],        c:"store", v:"keep", j:1300, y:true, s:{t:"AIプラン",j:2900,w:"AIに別途課金しているなら、こちらに寄せると1本分浮きます"}},
  {n:"iCloud+",     a:["ICLOUD"],                                 c:"store", v:"keep", j:400},
  {n:"Dropbox",     a:["DROPBOX"],                                c:"store", v:"cut",  j:1500, s:{t:"契約済みのクラウドに集約",j:0,w:"Google OneやiCloudがあるなら、置き場所が二重になっています"}},
  {n:"OneDrive",    a:["ONEDRIVE","MICROSOFT 365","MICROSOFT365"],c:"store", v:"cut",  j:1490, s:{t:"Googleドキュメント（無料）",j:0,w:"Word/Excelの互換編集は無料でできます"}},
@@ -289,7 +469,7 @@ const DB = [
  {n:"WordPress",   a:["WORDPRESS","WPENGINE"],                   c:"site",  v:"ai",   j:1500, alt:"静的サイト生成＋Pages（無料）"},
  {n:"STUDIO",      a:["STUDIO INC","STUDIO.DESIGN"],             c:"site",  v:"ai",   j:2480, alt:"静的HTML＋Pages（無料）"},
  {n:"ペライチ",     a:["ペライチ","PERAICHI"],                     c:"site",  v:"ai",   j:1465, alt:"静的HTML＋Pages（無料）"},
- {n:"お名前.com",  a:["お名前","ONAMAE","MUUMUU","ムームー"],      c:"site",  v:"keep", j:150},
+ {n:"お名前.com",  a:["お名前","ONAMAE","MUUMUU","ムームー"],      c:"site",  v:"keep", j:150, y:true},
  {n:"予約システム", a:["ACUITY","CALENDLY","STORES RESERVE","RESERVA","AIRRESERVE"],c:"book",v:"ai",j:5800, alt:"Cal.com（無料）"},
  {n:"Zoom",        a:["ZOOM.US","ZOOM COMMUNICATIONS","ZOOM"],   c:"meet",  v:"ai",   j:2484, alt:"Google Meet（1対1は時間無制限で無料）"},
  {n:"Kindle Unlimited",a:["KINDLE UNLIMITED","KINDLEUNLTD"],     c:"read",  v:"keep", j:980},
@@ -311,6 +491,7 @@ const DB = [
  {n:"ウォーターサーバー",a:["プレミアムウォーター","コスモウォーター","FRECIOUS"],c:"life",v:"cut",j:4000, s:{t:"浄水ポット・蛇口直結型",j:500,w:"初期費用3,000円ほど。半年で元が取れます"}},
  {n:"Amazon（都度購入）",a:["AMAZON.CO.JP","AMAZON.COM","AMZN MKTP"],c:"life",v:"skip",j:0},
  {n:"旅行・交通（都度）",a:["GRAB","AGODA","BOOKING.COM","EXPEDIA","JETSTAR","WILLER","ローチケ","じゃらん","楽天トラベル","UBER"],c:"life",v:"skip",j:0},
+ {n:"ADDress（多拠点住居）",a:["ADDRESS会員","ADDRESS.LOVE","アドレス会員"],c:"life",v:"cut",j:9800, s:{t:"泊まる月だけ契約",j:0,w:"使わない月が続くなら、必要な月だけ入り直す方が安く済みます"}},
  {n:"Apple（App Store経由）",a:["APPLE ACCOUNT","APPLEからの領収書","APP STORE","ITUNES"],c:"life",v:"weak",j:0},
  {n:"PlayStation Plus",a:["PLAYSTATION","SONY INTERACTIVE"],     c:"game",  v:"cut",  j:850,  s:{t:"エッセンシャル（最下位プラン）",j:850,w:"遊び放題のカタログを使っていないなら下げられます"}},
  {n:"Nintendo Switch Online",a:["NINTENDO"],                     c:"game",  v:"keep", j:306},
@@ -353,6 +534,8 @@ const PAY  = /(領収書|receipt|invoice|請求|お支払い|支払い|payment|c
 // 決済失敗・一時停止は「解約」ではない。契約は生きているので、金額だけ信じないでおく
 const FAIL = /(unsuccessful|failed|declined|失敗|できませんでした|エラー|一時停止|停止されました|保留)/i;
 const DEAD = /(canceled|cancelled|解約が完了|解約されました|解約手続きが完了|退会が完了|ご解約)/i;
+// 年払いは「当てずっぽうの倍率」では判定しない。本文にそう書いてあるか、年払いが普通のサービスだけ
+const ANNUAL = /(年会費|年額|年払い|1年間|12ヶ月|annual|yearly|per year)/i;
 
 function analyze(text){
   const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(s=>s.length>1);
@@ -366,15 +549,17 @@ function analyze(text){
       if (e._a.some(al => key.includes(al))) { matched = e; break; }
     }
     const dead = DEAD.test(line);
+    const annual = ANNUAL.test(line);
     // 金額を信じてよいのは「課金の証拠がある行」だけ。失敗通知の金額を拾うと請求額が化ける
     const paid = PAY.test(line) && !FAIL.test(line) && !dead;
     const amt  = paid ? amountOf(line) : null;
     if (matched){
       if (matched.v === "skip") continue;
-      const cur = hits.get(matched.n) || {e:matched, count:0, charges:[], paid:false, dead:false};
+      const cur = hits.get(matched.n) || {e:matched, count:0, charges:[], paid:false, dead:false, annual:false};
       cur.count++;
       cur.paid = cur.paid || paid;
       cur.dead = cur.dead || dead;
+      if (amt && annual) cur.annual = true;
       if (amt) cur.charges.push({amt, day: dayOf(line)});
       hits.set(matched.n, cur);
     } else {
@@ -400,8 +585,9 @@ function analyze(text){
     // 別の日でも同額なら、契約が2本ではなく引き落とし日がずれただけとみなす
     const distinct = [...new Set(perDay)].sort((a,b)=>a-b);
     const amt = distinct.length ? distinct.reduce((s,v)=>s+v, 0) : null;
-    // ponytail: 拾った額が月額目安の6倍超なら年払いとみなす。請求周期は本文に無いのでこの近似で足りる
-    const yearly = amt && h.e.j && distinct.length === 1 && amt >= h.e.j * 6;
+    // 年払い判定は「本文に年払いと書いてある」か「年払いが普通のサービス(y:true)で額が桁違い」のときだけ。
+    // 金額の倍率だけで判断すると、毎月$220のAIサブスクを年払いと誤認して1/12にしてしまう
+    const yearly = !!amt && distinct.length === 1 && (h.annual || (h.e.y && h.e.j && amt >= h.e.j * 6));
     const jpy = yearly ? Math.round(amt/12) : (amt || h.e.j);
     const swap = (h.e.s && h.e.s.t && h.e.s.j < jpy) ? h.e.s : null;
     return {
@@ -604,6 +790,20 @@ document.getElementById("demo").onclick = async (ev) => {
   await measure(ta.value);
   btn.disabled = false; btn.textContent = "デモをもう一度";
 };
+
+// 使い方ナビ: いま読んでいる手順を光らせる
+(function(){
+  const links = Array.from(document.querySelectorAll("#stepsnav a"));
+  const steps = links.map(a => document.getElementById(a.getAttribute("href").slice(1))).filter(Boolean);
+  if (!steps.length || !("IntersectionObserver" in window)) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id));
+    });
+  }, {rootMargin: "-64px 0px -55% 0px"});
+  steps.forEach(s => io.observe(s));
+})();
 
 // 事例カードの年齢は誕生日から出す（毎年ズレるのを防ぐ）
 (function(){
