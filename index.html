@@ -444,9 +444,38 @@ const DB = [
  {n:"ABEMA",       a:["ABEMA"],                                  c:"video", v:"cut",  j:1080, s:{t:"無料版",j:0,w:"追っかけ再生と広告カットが要らなければ無料で足ります"}},
  {n:"dアニメストア", a:["DアニメDアニメ","DANIME","ｄアニメ"],      c:"video", v:"keep", j:610,  s:{t:"",j:0,w:""}},
  {n:"YouTube Premium",a:["YOUTUBE PREMIUM","YOUTUBEPREMIUM"],    c:"video", v:"keep", j:1280},
+ // Web完結（dアカウントでログイン→設定・その他→Leminoプレミアムの解約）。2026年2月に990→1,540円へ値上げ済み
+ // 出典 https://www.docomo.ne.jp/info/news_release/2025/12/01_01.html / https://appllio.com/lemino-cancel
+ {n:"Lemino",      a:["LEMINO","レミノ"],                         c:"video", v:"cut",  j:1540},
+ // Web完結（アプリからは不可。ログイン→DMMプレミアム→プランを解約する→アンケート）
+ // 出典 https://appllio.com/dmm-tv-cancel
+ {n:"DMM TV",      a:["DMMプレミアム","DMM PREMIUM","DMM TV"],    c:"video", v:"cut",  j:550},
+ // Web完結（マイページ→アカウント情報→退会手続きを進める）。618円はau ID経由の額
+ // 出典 https://appllio.com/telasa-cancel / https://help.telasa.jp/faq/tag/解約/
+ {n:"TELASA",      a:["TELASA","テラサ"],                         c:"video", v:"cut",  j:618},
+ // Web完結（アプリ不可・マイページから。iTunes/GooglePlay決済のときだけ端末側）
+ // 出典 https://appllio.com/fod-premium-cancel
+ {n:"FODプレミアム",a:["FODプレミアム","FOD PREMIUM"],             c:"video", v:"cut",  j:976},
+ // Webは要WEB会員登録。電話0120-580-807でも可だが、あとから再加入の勧誘電話が来る
+ // 出典 https://support.wowow.co.jp/answer/61add1649e474a001c1ccf03/
+ {n:"WOWOW",       a:["WOWOW","ワウワウ"],                        c:"video", v:"cut",  j:2530},
+ // Myスカパー/電話0120-211-855/チャット。加入者番号(B-CASに記載)が要る＝手元に準備してから
+ // 金額は基本プラン3,960＋基本料429。出典 https://faq.skyperfectv.co.jp/faq/show/110
+ {n:"スカパー！",   a:["スカパー","SKYPERFECTV","SKY PERFECT"],    c:"video", v:"cut",  j:4389},
+ // 2026年7月18日に900→1,200円へ値上げ。解約は設定→サブスクリプションでWeb完結
+ // 出典 https://av.watch.impress.co.jp/docs/news/2126455.html
+ {n:"Apple TV+",   a:["APPLE TV+","APPLE TV PLUS"],               c:"video", v:"cut",  j:1200},
  {n:"Spotify",     a:["SPOTIFY","ｽﾎﾟﾃｲﾌｱｲ"],                     c:"music", v:"cut",  j:1080, s:{t:"YouTube Premiumに一本化",j:0,w:"Premiumに音楽が付いてきます。両方払うと年13,000円の丸損"}},
- {n:"Apple Music", a:["APPLE MUSIC","APPLEMUSIC"],               c:"music", v:"cut",  j:1080, s:{t:"Apple One",j:1200,w:"iCloud・TV+も使うなら束ねた方が安い"}},
+ // 2026年7月18日の一斉改定後の額（Apple Music 1,080→1,180 / Apple One 1,200→1,350）
+ // 出典 https://av.watch.impress.co.jp/docs/news/2126455.html
+ {n:"Apple Music", a:["APPLE MUSIC","APPLEMUSIC"],               c:"music", v:"cut",  j:1180, s:{t:"Apple One",j:1350,w:"iCloud・TV+も使うなら束ねた方が安い"}},
  {n:"Amazon Music",a:["AMAZON MUSIC"],                           c:"music", v:"cut",  j:1080, s:{t:"Prime会員の無料枠",j:0,w:"Prime会員なら広告なしのシャッフル再生が無料で付いています"}},
+ // 買った経路でしか止められない（App Store / Google Play / LINE STORE / My SoftBank）。更新24時間前まで
+ // 出典 https://help2.line.me/LINEMusic/web/?contentId=10009638&lang=ja / https://appllio.com/line-music-cancellation
+ {n:"LINE MUSIC",  a:["LINE MUSIC","LINEMUSIC"],                 c:"music", v:"cut",  j:980, s:{t:"YouTube Premiumに一本化",j:0,w:"Premiumに音楽が付いてきます。音楽サブスクを2本持つ意味はありません"}},
+ // 別名を素の "AWA" にすると「川崎」「沖縄」の行にも当たるので、必ずプラン名込みで持つ
+ // 解約はアプリの購読停止か公式サイト。日割り返金なし。出典 https://www.cinemacafe.net/article/2025/01/20/97071.html
+ {n:"AWA",         a:["AWA MUSIC","AWA STANDARD","AWA INC"],     c:"music", v:"cut",  j:980, s:{t:"YouTube Premiumに一本化",j:0,w:"曲数で大きな差はありません。2本目の音楽サブスクは丸ごと無駄です"}},
  {n:"Claude",      a:["ANTHROPIC","CLAUDE"],                     c:"ai",    v:"keep", j:3000},
  {n:"ChatGPT",     a:["OPENAI","CHATGPT"],                       c:"ai",    v:"keep", j:3100},
  {n:"Gemini",      a:["GOOGLE AI","GEMINI ADVANCED"],            c:"ai",    v:"keep", j:2900, s:{t:"Google One AIプラン",j:2900,w:"ストレージ2TBが同じ料金に含まれます。別でストレージを買っているなら重複"}},
@@ -462,7 +491,7 @@ const DB = [
  {n:"Vercel",      a:["VERCEL"],                                 c:"cloud", v:"ai",   j:3100, alt:"GitHub Pages / Cloudflare Pages（無料）"},
  {n:"Heroku",      a:["HEROKU"],                                 c:"cloud", v:"ai",   j:1100, alt:"Cloudflare Workers の無料枠"},
  {n:"レンタルサーバ",a:["SAKURA","さくらインターネット","XSERVER","エックスサーバー","LOLIPOP"],c:"cloud",v:"ai",j:1000, alt:"静的サイトなら Pages で無料"},
- {n:"携帯（通信）",a:["DOCOMO","AU KDDI","SOFTBANK","楽天モバイル","日本通信","合理的","MINEO","IIJ","POVO","AHAMO"],c:"comms",v:"keep",j:2178, s:{t:"格安SIM（povo / 日本通信）",j:1100,w:"大手キャリアのままなら、番号を変えずに月3,000円前後下がります"}},
+ {n:"携帯（通信）",a:["DOCOMO","AU KDDI","SOFTBANK","楽天モバイル","日本通信","合理的","MINEO","IIJ","POVO","AHAMO","UQ MOBILE","ワイモバイル","Y!MOBILE","LINEMO","イオンモバイル","HISモバイル","NUROモバイル"],c:"comms",v:"keep",j:2178, s:{t:"格安SIM（povo / 日本通信）",j:1100,w:"大手キャリアのままなら、番号を変えずに月3,000円前後下がります"}},
  {n:"光回線",      a:["ひかり","NURO","フレッツ","JCOM","ソネット","OCN"],c:"comms",v:"keep",j:5000, s:{t:"スマホとのセット割",j:4000,w:"同じ回線でも申込経路を変えるだけで下がる場合があります"}},
  {n:"Squarespace", a:["SQUARESPACE","SQSP"],                     c:"site",  v:"ai",   j:5630, alt:"静的HTML＋GitHub Pages（無料）"},
  {n:"Wix",         a:["WIX.COM","WIX"],                          c:"site",  v:"ai",   j:2600, alt:"静的HTML＋Pages（無料）"},
@@ -474,7 +503,19 @@ const DB = [
  {n:"Zoom",        a:["ZOOM.US","ZOOM COMMUNICATIONS","ZOOM"],   c:"meet",  v:"ai",   j:2484, alt:"Google Meet（1対1は時間無制限で無料）"},
  {n:"Kindle Unlimited",a:["KINDLE UNLIMITED","KINDLEUNLTD"],     c:"read",  v:"keep", j:980},
  {n:"Audible",     a:["AUDIBLE"],                                c:"read",  v:"cut",  j:1500, s:{t:"図書館の電子貸出",j:0,w:"自治体の電子図書館は朗読つきの本も無料で借りられます"}},
- {n:"新聞",        a:["日本経済新聞","NIKKEI","朝日新聞","読売新聞"],c:"read", v:"cut",  j:4277, s:{t:"電子版のみのプラン",j:1850,w:"紙を取っていないのに宅配込みの料金になっていないか確認を"}},
+ {n:"新聞",        a:["日本経済新聞","NIKKEI","朝日新聞","読売新聞","毎日新聞","産経新聞","日経電子版"],c:"read", v:"cut",  j:4277, s:{t:"電子版のみのプラン",j:1850,w:"紙を取っていないのに宅配込みの料金になっていないか確認を"}},
+ // Web完結（dアカウントでログイン→解約）。日割りが無く、月初に切っても1か月分ぜんぶ取られる
+ // 出典 https://dmagazine.docomo.ne.jp/campaign/dmag-resign/ / https://appllio.com/dmagazine-cancel
+ {n:"dマガジン",    a:["Dマガジン","DMAGAZINE"],                   c:"read",  v:"cut",  j:580, s:{t:"楽天マガジンの年額プラン",j:330,w:"読める雑誌はほぼ同じ。年額にすると月330円で済みます"}},
+ // Web完結（アプリからは不可。ご契約内容の確認・変更→解約ページへ）。前払い制で返金なし
+ // 出典 https://appllio.com/rakuten-magazine-cancel
+ {n:"楽天マガジン",  a:["楽天マガジン","RAKUTEN MAGAZINE"],         c:"read",  v:"cut",  j:418, s:{t:"年額プラン",j:330,w:"年3,960円＝月330円。読み続けるなら年額の方が安い"}},
+ // Web完結（アプリ不可。サイト最下部の「読み放題コース解約」）。金額はライト、フルは1,480円
+ // 出典 https://www.aplix.co.jp/blog/cmoa-how-to-cancel/ / https://genkosha-direct.com/yomihodai/
+ {n:"コミックシーモア読み放題",a:["コミックシーモア","シーモア読み放題","CMOA"],c:"read",v:"cut",j:780},
+ // Web完結（マイページ→お客様情報→定期購読を解約する）。解約しても月末までは読める
+ // 出典 https://shonenjumpplus.com/subscription
+ {n:"少年ジャンプ+定期購読",a:["少年ジャンプ","SHONENJUMP"],       c:"read",  v:"cut",  j:980},
  {n:"note",        a:["NOTE.COM","ノート プレミアム"],             c:"read",  v:"cut",  j:500},
  {n:"Notion",      a:["NOTION"],                                 c:"tool",  v:"cut",  j:1500, s:{t:"無料プラン",j:0,w:"1人で使う分にはブロック数無制限。有料の必要はほぼありません"}},
  {n:"Slack",       a:["SLACK"],                                  c:"tool",  v:"cut",  j:1050, s:{t:"無料プラン",j:0,w:"過去ログ90日で困らないチームなら無料で足ります"}},
@@ -487,15 +528,27 @@ const DB = [
  {n:"Zapier",      a:["ZAPIER"],                                 c:"tool",  v:"ai",   j:3000, alt:"スクリプト1本で置き換わることが多い"},
  {n:"会計ソフト",   a:["FREEE","MFクラウド","マネーフォワード","弥生"],c:"tool",v:"keep",j:2680, s:{t:"下位プラン",j:1180,w:"請求書発行を使っていないなら、ひとつ下で足ります"}},
  {n:"GitHub",      a:["GITHUB"],                                 c:"tool",  v:"cut",  j:620,  s:{t:"無料プラン",j:0,w:"非公開リポジトリも無料・無制限になりました"}},
- {n:"ジム",        a:["ANYTIME FITNESS","GOLD'S GYM","エニタイム","コナミスポーツ","CHOCOZAP","ちょこざっぷ"],c:"life",v:"cut",j:7000, s:{t:"月3,000円台の24時間ジム",j:3278,w:"週2回以下なら、設備の差より価格差の方が効きます"}},
+ {n:"ジム",        a:["ANYTIME FITNESS","GOLD'S GYM","エニタイム","コナミスポーツ","CHOCOZAP","ちょこざっぷ","ティップネス","ルネサンス","セントラルスポーツ","JOYFIT","メガロス"],c:"life",v:"cut",j:7000, s:{t:"月3,000円台の24時間ジム",j:3278,w:"週2回以下なら、設備の差より価格差の方が効きます"}},
  {n:"ウォーターサーバー",a:["プレミアムウォーター","コスモウォーター","FRECIOUS"],c:"life",v:"cut",j:4000, s:{t:"浄水ポット・蛇口直結型",j:500,w:"初期費用3,000円ほど。半年で元が取れます"}},
+ // 退会は店舗のみ。電話も公式サイトも受け付けない。申し出た翌月末まで会費が続く（特別退会は手数料315円で当月末）
+ // 金額は12か月契約時の月会費。出典 https://fitness.curves.co.jp/price/ / https://nomad-saving.com/104288/
+ {n:"カーブス",     a:["カーブス","CURVES"],                       c:"life",  v:"cut",  j:6270, s:{t:"月3,000円台の24時間ジム",j:3278,w:"退会は通っている店舗でしか受け付けません。窓口が開いている日に会員証を持って行くこと"}},
+ // 自動延長の停止＝解約。注文番号の先頭がAP/NPならマイノートン、SYならノートンストアが窓口。課金後60日以内なら返金
+ // 金額はデラックス1年7,680円を月割り。出典 https://support.norton.com/sp/ja/jp/home/current/solutions/kb20100113164023EN
+ {n:"ノートン",     a:["ノートン","NORTON","GEN DIGITAL"],         c:"life",  v:"cut",  j:640, y:true, s:{t:"Windows標準のMicrosoft Defender（無料）",j:0,w:"個人利用なら標準の防御で足ります。止めるのは課金予定日より前に（過ぎても60日以内なら返金申請できます）"}},
+ // Web完結（各種サービス入会・退会→退会手続き→退会理由アンケート）。auスマートパスプレミアムから改名
+ // 出典 https://appllio.com/au-smartpass-premium-cancel
+ {n:"Pontaパス",   a:["スマートパス","PONTAパス","PONTA PASS"],    c:"life",  v:"cut",  j:548},
+ // アプリ/Webで完結。ただし更新日の48時間前までに止めないと次の1か月が課金される
+ // 出典 https://help.uber.com/en/riders/article/uber-one-の解約方法・返金に関するお問合せ
+ {n:"Uber One",    a:["UBER ONE","UBERONE"],                      c:"life",  v:"cut",  j:698},
  {n:"Amazon（都度購入）",a:["AMAZON.CO.JP","AMAZON.COM","AMZN MKTP"],c:"life",v:"skip",j:0},
  {n:"旅行・交通（都度）",a:["GRAB","AGODA","BOOKING.COM","EXPEDIA","JETSTAR","WILLER","ローチケ","じゃらん","楽天トラベル","UBER"],c:"life",v:"skip",j:0},
  {n:"ADDress（多拠点住居）",a:["ADDRESS会員","ADDRESS.LOVE","アドレス会員"],c:"life",v:"cut",j:9800, s:{t:"泊まる月だけ契約",j:0,w:"使わない月が続くなら、必要な月だけ入り直す方が安く済みます"}},
  {n:"Apple（App Store経由）",a:["APPLE ACCOUNT","APPLEからの領収書","APP STORE","ITUNES"],c:"life",v:"weak",j:0},
  {n:"PlayStation Plus",a:["PLAYSTATION","SONY INTERACTIVE"],     c:"game",  v:"cut",  j:850,  s:{t:"エッセンシャル（最下位プラン）",j:850,w:"遊び放題のカタログを使っていないなら下げられます"}},
  {n:"Nintendo Switch Online",a:["NINTENDO"],                     c:"game",  v:"keep", j:306},
- {n:"Apple Arcade",a:["APPLE ARCADE"],                           c:"game",  v:"cut",  j:900,  s:{t:"Apple One",j:1200,w:"iCloudや音楽も使っているなら束ねた方が安い"}}
+ {n:"Apple Arcade",a:["APPLE ARCADE"],                           c:"game",  v:"cut",  j:900,  s:{t:"Apple One",j:1350,w:"iCloudや音楽も使っているなら束ねた方が安い"}}
 ];
 
 const NOISE = /(株式会社|合同会社|カブシキガイシヤ|ｶﾌﾞｼｷｶﾞｲｼﾔ|ご請求|領収書|請求書|お支払い|支払い|の受け取り|様への|receipt from|your receipt|invoice|payment to|welcome to|決済|完了|お知らせ)/gi;
@@ -847,6 +900,17 @@ function selfCheck(){
     "乗り換え先が同額なら節約0円として扱うはず");
   console.assert(find("ジム").save === 7000 - 3278, "上位互換がある場合は差額だけが節約額");
   console.assert(r.rows.every(x => x.save <= x.jpy), "節約額が請求額を超えてはいけない");
+
+  // 辞書を増やすと必ず起きる事故: 先に並んでいる項目に別名を横取りされる
+  // （"UBER ONE" が「旅行・交通（都度）」の "UBER" に食われて、丸ごと集計から消える類）
+  const stolen = DB.filter(e => e._a.some(al => DB.find(x => x._a.some(a2 => al.includes(a2))) !== e));
+  console.assert(!stolen.length, "別名が他の辞書項目に横取りされている: " + stolen.map(e=>e.n).join(" / "));
+
+  const r2 = analyze(["2026/08/01 ご請求 Uber One ¥698",
+                      "2026/08/02 領収書 スカパー！ ¥4,389",
+                      "2026/08/03 お支払い カーブス ¥6,270"].join("\n"));
+  console.assert(["Uber One","スカパー！","カーブス"].every(n => r2.rows.some(x => x.name === n)),
+    "追加した辞書が「未測定」に落ちている");
   console.log("selfCheck done");
 }
 selfCheck();
